@@ -30,7 +30,7 @@
 		</div>
 		
 		<script type="text/javascript">
-            var userInfo = {userId:"kazaff", md5:""};   //用户会话信息
+            var userInfo = {userId:"lianxian", md5:""};   //用户会话信息
             var chunkSize = 400 * 1024;        //分块大小
             var uniqueFileName = null;          //文件唯一标识符
             var md5Mark = null;
@@ -58,10 +58,8 @@
                         console.log(percentage);
                     }).then(function(val){
                         console.log("总耗时: "+((new Date().getTime()) - start)/1000);
-
                         md5Mark = val;
                         userInfo.md5 = val;
-
                         $.ajax({
                             type: "POST"
                             , url: backEndUrl
@@ -73,12 +71,9 @@
                             , timeout: 1000 //todo 超时的话，只能认为该文件不曾上传过
                             , dataType: "json"
                         }).then(function(data, textStatus, jqXHR){
-
                             //console.log(data);
-
                             if(data.ifExist){   //若存在，这返回失败给WebUploader，表明该文件不需要上传
                                 task.reject();
-
                                 uploader.skipFile(file);
                                 file.path = data.path;
                                 UploadComlate(file);
@@ -119,7 +114,6 @@
                     }, function(jqXHR, textStatus, errorThrown){    //任何形式的验证失败，都触发重新上传
                         task.resolve();
                     });
-
                     return $.when(task);
                 }
                 , afterSendFile: function(file){
