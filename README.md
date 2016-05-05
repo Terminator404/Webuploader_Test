@@ -46,3 +46,8 @@ Mkoa-builder | 代码生成器  | https://github.com/Megic/Mkoa-builder
 > npm使用阿里巴巴npm源
 
 > npm config set registry http://registry.npm.taobao.org/
+
+
+#启动项目
+##config目录下config.js配置地址端口，默认localhost：3002
+##启动app.js,浏览器输入localhost：3002/demo.html,点击上传。
