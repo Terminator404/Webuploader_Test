@@ -4,7 +4,7 @@
         <div slot="$top" id="search">
             <select ms-duplex="searchKey" class="f-fl" >
                 <option value="id">ID</option>
-                <option value="md5">md5校验</option><option value="chunks">总分块数</option><option value="chunk">第几分块</option><option value="file_size">文件大小</option>
+                <option value="chunks">总分块数</option><option value="chunk">第几分块</option><option value="size">文件大小(KB)</option><option value="isall">传输完成</option><option value="name">唯一名称</option><option value="md5">MD5校验</option>
             </select>
             <input type="text" ms-duplex="searchValue" class="f-fl f-ml5"/>
             <button ms-click="search" class="f-btn f-btn-success f-ml10" >搜索</button>
@@ -12,10 +12,10 @@
         </div>
         <table slot="$list" class="mkoa-table">
             <thead>
-            <tr><th width="30">ID</th><th>md5校验</th><th>总分块数</th><th>第几分块</th><th>文件大小</th><th width="155">创建时间</th><th width="100">操作</th></tr>
+            <tr><th width="30">ID</th><th>总分块数</th><th>第几分块</th><th>文件大小(KB)</th><th>传输完成</th><th>唯一名称</th><th>MD5校验</th><th width="155">创建时间</th><th width="100">操作</th></tr>
             </thead>
             <tbody>
-            <tr ms-repeat="listData"><td>{{el.id}}</td><td>{{el.md5}}</td><td>{{el.chunks}}</td><td>{{el.chunk}}</td><td>{{el.file_size}}</td><td>{{el.createdAt|date("yyyy-MM-dd HH:mm:ss")}}</td>
+            <tr ms-repeat="listData"><td>{{el.id}}</td><td>{{el.chunks}}</td><td>{{el.chunk}}</td><td>{{el.size}}</td><td>{{el.isall}}</td><td>{{el.name}}</td><td>{{el.md5}}</td><td>{{el.createdAt|date("yyyy-MM-dd HH:mm:ss")}}</td>
            <td><a ms-attr-href="'#!/?file_info/admin/file_info/addItem?id='+el.id"  class="f-btn f-btn-sm">编辑</a> <button  ms-click="remove($remove,el.id)" class="f-btn f-btn-sm">删除</button></td>
             </tr>
             </tbody>

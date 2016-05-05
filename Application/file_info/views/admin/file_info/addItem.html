@@ -8,11 +8,13 @@
             <tr ms-if="form.id">
                 <td width="120"><span class="mkoa-form-title">ID</span></td><td>{{form.id}}</td>
             </tr>
-            <tr><td class="mkoa-form-title"><span>md5校验</span></td>
-                <td><input type="text" ms-duplex="form.md5"/></td></tr><tr><td class="mkoa-form-title"><span>总分块数</span></td>
+            <tr><td class="mkoa-form-title"><span>总分块数</span></td>
                 <td><input type="text" ms-duplex="form.chunks"/></td></tr><tr><td class="mkoa-form-title"><span>第几分块</span></td>
-                <td><input type="text" ms-duplex="form.chunk"/></td></tr><tr><td class="mkoa-form-title"><span>文件大小</span></td>
-                <td><input type="text" ms-duplex="form.file_size"/></td></tr>
+                <td><input type="text" ms-duplex="form.chunk"/></td></tr><tr><td class="mkoa-form-title"><span>文件大小(KB)</span></td>
+                <td><input type="text" ms-duplex="form.size"/></td></tr><tr><td class="mkoa-form-title"><span>传输完成</span></td>
+                <td><input type="text" ms-duplex="form.isall"/></td></tr><tr><td class="mkoa-form-title"><span>唯一名称</span></td>
+                <td><input type="text" ms-duplex="form.name"/></td></tr><tr><td class="mkoa-form-title"><span>MD5校验</span></td>
+                <td><input type="text" ms-duplex="form.md5"/></td></tr>
             <tr ms-if="form.createdAt">
                 <td width="120"><span class="mkoa-form-title">创建时间</span></td><td>{{form.createdAt|date("yyyy-MM-dd HH:mm:ss")}}</td>
             </tr>
@@ -31,13 +33,15 @@
     (function(){
         //验证规则
         var rules =  {
-                md5: {rule:'required',error:'验证失败!'},
                 chunks: {rule:'required',error:'验证失败!'},
                 chunk: {rule:'required',error:'验证失败!'},
-                file_size: {rule:'required',error:'验证失败!'}};
+                size: {rule:'required',error:'验证失败!'},
+                isall: {rule:'required',error:'验证失败!'},
+                name: {rule:'required',error:'验证失败!'},
+                md5: {rule:'required',error:'验证失败!'}};
 
         var id=avalon.vmodels['router'].GET['id'];//是否存在id
-        var form={"md5":"","chunks":"","chunk":"","file_size":""};//数据对象
+        var form={"chunks":"","chunk":"","size":"","isall":"","name":"","md5":""};//数据对象
         require(["mkoaAjax/mkoaAjax","KoaValidator"],function($a,$v){
         if(id){//更新数据
             $a.getJSON(app.$host +'file_info/admin/file_info/findOne',{id:id,t:new Date().getTime()},function(data){//获取列表数据

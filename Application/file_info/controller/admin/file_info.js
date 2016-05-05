@@ -12,16 +12,18 @@ module.exports = function ($this) {
     main['add'] = function *() {
         /*验证规则*/
         var rules = {
-            md5: {rule: 'required', error: '验证失败!'},
-            chunks: {rule: 'required', error: '验证失败!'},
-            chunk: {rule: 'required', error: '验证失败!'},
-            file_size: {rule: 'required', error: '验证失败!'}
-        };
+                chunks: {rule:'required',error:'验证失败!'},
+                chunk: {rule:'required',error:'验证失败!'},
+                size: {rule:'required',error:'验证失败!'},
+                isall: {rule:'required',error:'验证失败!'},
+                name: {rule:'required',error:'验证失败!'},
+                md5: {rule:'required',error:'验证失败!'}};
 
         var check = $F.V.validate($this.POST, rules);//验证数据
+
         if (check.status) {/*通过验证*/
             var where = {id: $this.POST['id'] ? parseInt($this.POST['id']) : 0};
-            var res, resData;
+            var res,resData;
             if (where.id) {/*存在数据ID更新改数据*/
                 res = yield $D('file_info').update($this.POST, {where: where});
                 resData = $this.POST;
@@ -35,6 +37,7 @@ module.exports = function ($this) {
         }
     };
 
+
     //返回数据
     main['findOne'] = function *() {
         var where = {
@@ -44,36 +47,37 @@ module.exports = function ($this) {
         $this.success(res);
     };
 
+
     //返回分页数据
     main['findAll'] = function *() {
-        var perPages = $this.GET['perPages'] ? parseInt($this.GET['perPages']) : 10;//每页数据数
-        var currentPage = $this.GET['currentPage'] ? parseInt($this.GET['currentPage']) : 1;//查询页码
+        var perPages=$this.GET['perPages']?parseInt($this.GET['perPages']):10;//每页数据数
+        var currentPage=$this.GET['currentPage']?parseInt($this.GET['currentPage']):1;//查询页码
         var where = {};
         var res = yield $D('file_info').findAndCountAll({
-            where: where,
-            limit: perPages,
-            offset: perPages * (currentPage - 1)
+        where: where,
+        limit: perPages,
+        offset: perPages * (currentPage - 1)
         }, {raw: true});
         if (res)$this.success(res);
     };
     //返回搜索数据
     main['search'] = function *() {
-        var perPages = $this.GET['perPages'] ? parseInt($this.GET['perPages']) : 10;//每页数据数
-        var currentPage = $this.GET['currentPage'] ? parseInt($this.GET['currentPage']) : 1;//查询页码
-        var where = {};
-        if (!isNaN($this.GET['searchValue'])) {
-            where[$this.GET['searchKey']] = $this.GET['searchValue'];
-        } else {
-            where[$this.GET['searchKey']] = {
-                $like: '%' + $this.GET['searchValue'] + '%'
-            };
-        }
-        var res = yield $D('file_info').findAndCountAll({
-            where: where,
-            limit: perPages,
-            offset: perPages * (currentPage - 1)
-        }, {raw: true});
-        if (res)$this.success(res);
+    var perPages=$this.GET['perPages']?parseInt($this.GET['perPages']):10;//每页数据数
+    var currentPage=$this.GET['currentPage']?parseInt($this.GET['currentPage']):1;//查询页码
+    var where = {};
+    if(!isNaN($this.GET['searchValue'])){
+    where[$this.GET['searchKey']]=$this.GET['searchValue'];
+    }else{
+    where[$this.GET['searchKey']]={
+    $like:'%'+$this.GET['searchValue']+'%'
+    };
+    }
+    var res = yield $D('file_info').findAndCountAll({
+    where: where,
+    limit: perPages,
+    offset: perPages * (currentPage - 1)
+    }, {raw: true});
+    if (res)$this.success(res);
     };
 
     //删除数据
@@ -84,5 +88,6 @@ module.exports = function ($this) {
         if (where.id)yield $D('file_info').destroy({where: where});
         $this.success();
     };
-    return main;
+
+return main;
 };

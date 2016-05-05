@@ -21,7 +21,7 @@ module.exports = function ($this) {
         var fields = $this.POST['fields'];
         var status = $this.POST['status'];
         if (!status) {//上传
-            //console.log(fields);
+            var name=wu.createUniqueFileName(fields);
             var filePath = $C.staticpath + $this.FILES.file.path;
             var isChunks = !(!fields['chunks'] || parseInt(fields['chunks']) <= 0);
             if (isChunks) {//分片
@@ -47,9 +47,10 @@ module.exports = function ($this) {
                 }
             }
 
-
-
-
+            var chunk=parseInt(fields['chunk'])+1;
+            var chunks=parseInt(fields['chunks']);
+            var where = {md5: fields['md5']};
+            res = yield $D('file_info').update({size:fields['size']/1024,chunk:chunk,chunks:chunks,isall:chunk/chunks==1?true:false,name:wu.createUniqueFileName(fields)},{where: where});
 
             var rn = fs.renameSync($this.FILES.file.oldPath, filePath);
             if (rn) {
@@ -60,7 +61,7 @@ module.exports = function ($this) {
 
         } else if (status == "md5Check") {  //秒传校验
             //todo 模拟去数据库中校验md5是否存在
-            var where = {md5: $this.POST.md5};
+            var where = {md5: $this.POST.md5,isall:true};
             var isup = yield $D('file_info').findOne({where: where}, {raw: true});
             var res;
             if (isup) {
@@ -69,7 +70,7 @@ module.exports = function ($this) {
                 res = yield $D('file_info').build($this.POST).save();
                 $this.body = {"ifExist": 0};
             }
-            //
+
             //if($this.POST.md5 == "b0201e4d41b2eeefc7d3d355a44c6f5a"){
             //    $this.body={"ifExist":1, "path":"kazaff2.jpg"};
             //}else{
@@ -78,6 +79,7 @@ module.exports = function ($this) {
             //
 
         } else if (status == "chunkCheck") {  //分片校验
+
             var pic = path.join($C.upload, $this.POST['name'], $this.POST['chunkIndex']);
             var check = false;
             if (fs.existsSync(pic)) {
@@ -105,7 +107,6 @@ module.exports = function ($this) {
                 var dir = path.join($C.upload, name);
                 for (var i = 0; i < $this.POST.chunks; i++) {
                     var chunkFile = path.join(dir, i.toString());
-                    console.log(chunkFile);
                     var input = fs.createReadStream(chunkFile);
                     var cin = new (cs.Reader)(input);
                     var txt = '';

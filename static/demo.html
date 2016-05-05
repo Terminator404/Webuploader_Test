@@ -5,19 +5,9 @@
 		<title>WebUploader</title>
 		<link rel="stylesheet" href="webuploader.css" />
 		<style type="text/css">
-			.itemDel, .itemStop, .itemUpload{
-				margin-left: 15px;
-				color: blue;
-				cursor: pointer;
-			}
-			#theList{
-				width: 80%;
-				min-height: 100px;
-				border: 1px solid red;
-			}
-            #theList .itemStop{
-                display: none;
-            }
+			.itemDel, .itemStop, .itemUpload{  margin-left: 15px;  color: blue;  cursor: pointer;  }
+			#theList{  width: 80%;  min-height: 100px;  border: 1px solid red;  }
+            #theList .itemStop{  display: none;  }
 		</style>
 		<script src="jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="md5.js" type="text/javascript" charset="utf-8"></script>
@@ -28,7 +18,7 @@
 			<ul id="theList"></ul>
 			<div id="picker">选择文件</div>
 		</div>
-		
+
 		<script type="text/javascript">
             var userInfo = {userId:"lianxian", md5:""};   //用户会话信息
             var chunkSize = 400 * 1024;        //分块大小
@@ -55,7 +45,7 @@
                     var task = new $.Deferred();
                     var start = new Date().getTime();
                     (new WebUploader.Uploader()).md5File(file, 0, 10*1024*1024).progress(function(percentage){
-                        console.log(percentage);
+//                        console.log(percentage);
                     }).then(function(val){
                         console.log("总耗时: "+((new Date().getTime()) - start)/1000);
                         md5Mark = val;
@@ -134,17 +124,13 @@
                             , cache: false
                             , dataType: "json"
                         }).then(function(data, textStatus, jqXHR){
-
                             //todo 检查响应是否正常
-
                             task.resolve();
                             file.path = data.path;
                             UploadComlate(file);
-
                         }, function(jqXHR, textStatus, errorThrown){
                             task.reject();
                         });
-
                         return $.when(task);
                     }else{
                         UploadComlate(file);
@@ -188,27 +174,44 @@
 			});
 
 			uploader.on("fileQueued", function(file){
-				
 				$("#theList").append('<li id="'+file.id+'">' +
 					'<img /><span>'+file.name+'</span><span class="itemUpload">上传</span><span class="itemStop">暂停</span><span class="itemDel">删除</span>' +
 					'<div class="percentage"></div>' +
 				'</li>');
-				
-				var $img = $("#" + file.id).find("img");
-				
-				uploader.makeThumb(file, function(error, src){
+
+                var $img = $("#" + file.id).find("img");
+                uploader.makeThumb(file, function(error, src){
 					if(error){
 						$img.replaceWith("<span>不能预览</span>");
 					}
-
 					$img.attr("src", src);
 				});
-				
+
+                uniqueFileName = md5(''+userInfo.userId+file.name+file.type+file.lastModifiedDate+file.size);
+                $.getJSON("file_info/file_info/search",{searchKey:'name',searchValue:uniqueFileName},function(data){
+                    if (data.error) {
+                        console.error(data.error);
+                    }
+                    else{
+                        if(data.data.rows[0]==undefined){
+                            $("#" + file.id + " .percentage").text("等待传输");
+                        }else{
+                            var chunk=data.data.rows[0].chunk;
+                            var chunks=data.data.rows[0].chunks;
+                            var process=(parseFloat(chunk)/parseFloat(chunks));
+                            if (process==1){
+                                $("#" + file.id + " .percentage").text("此文件可秒传");
+                            } else{
+                                $(".itemUpload").text("继续传输");
+                                $("#" + file.id + " .percentage").text("已传输:"+process.toPercent());
+                            }
+                        }
+                    }
+                });
 			});
 			
 			$("#theList").on("click", ".itemUpload", function(){
 				uploader.upload();
-
                 //"上传"-->"暂停"
                 $(this).hide();
                 $(".itemStop").show();
@@ -216,7 +219,6 @@
 
             $("#theList").on("click", ".itemStop", function(){
                 uploader.stop(true);
-
                 //"暂停"-->"上传"
                 $(this).hide();
                 $(".itemUpload").show();
@@ -230,17 +232,21 @@
 			});
 			
 			uploader.on("uploadProgress", function(file, percentage){
-				$("#" + file.id + " .percentage").text(percentage * 100 + "%");
+				$("#" + file.id + " .percentage").text(percentage.toPercent());
 			});
 
             function UploadComlate(file){
                 console.log(file);
-
                 $("#" + file.id + " .percentage").text("上传完毕");
                 $(".itemStop").hide();
                 $(".itemUpload").hide();
                 $(".itemDel").hide();
             }
+
+            Number.prototype.toPercent = function(){
+                return (Math.round(this * 10000)/100).toFixed(2) + '%';
+            }
+
 		</script>
 	</body>
 </html>
