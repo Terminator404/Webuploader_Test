@@ -27,27 +27,6 @@
 Mkoa-builder | 代码生成器  | https://github.com/Megic/Mkoa-builder
 
 
-
-#Centos 运行环境
-> yum install npm
-
-> npm install -g n
-
-> n stable //安装最新稳定版nodejs 
-
-> npm install -g pm2
-
-> node 4.0以下版本需要"--harmony"参数
-
-> pm2 start app.js --node-args="--harmony"
-
-> sequelize 模块的依赖需要进入 sequelize文件夹运行npm install 安装
-
-> npm使用阿里巴巴npm源
-
-> npm config set registry http://registry.npm.taobao.org/
-
-
 #启动项目
-##config目录下config.js配置地址端口，默认localhost：3002
-##启动app.js,浏览器输入localhost：3002/demo.html,点击上传。
+####config目录下config.js配置地址端口，默认localhost：3002
+####启动app.js,浏览器输入localhost：3002/demo.html,点击上传。
